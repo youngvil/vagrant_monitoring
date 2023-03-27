@@ -1,0 +1,33 @@
+---
+- name:
+  hosts: all
+  become: true
+  vars:
+    node_exporter_version: "1.2.2"
+  
+  tasks:
+    - name: Install Node Exporter
+      include_tasks: node_exporter.yml
+      tags:
+        - node_exporter
+
+    - name: Install Docker and Docker Compose
+      include_tasks: docker.yml
+      tags:
+        - docker_install
+
+    - name: Grafana and Prometheus configuration
+      include_tasks: monitoring.yml
+      tags:
+        - monitoring
+        - prometheus
+        - grafana
+    
+    - name: Run Docker-Compose
+      include_tasks: run_docker_compose.yml
+      tags:
+        - docker_run
+        - docker_compose
+
+
+

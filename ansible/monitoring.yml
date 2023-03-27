@@ -1,0 +1,31 @@
+---
+- name: Ensure Grafana directory exist
+  file:
+    path: /etc/grafana
+    recurse: true
+    state: directory
+
+- name: Copy config files for dashboard and datasource
+  copy:
+    src: ./containers/provisioning
+    dest: /etc/grafana/
+
+- name: Download dashboard
+  get_url:
+    url: "https://grafana.com/api/dashboards/1860/revisions/30/download"
+    dest: /etc/grafana/provisioning/dashboards/dashboard.json
+  register: _download_dashboard
+  until: _download_dashboard is succeeded
+  retries: 5
+  delay: 2
+  
+- name: Ensure Prometheus directory exists
+  file:
+    path: /etc/prometheus
+    recurse: true
+    state: directory
+
+- name: Copy Prometheus config file
+  copy:
+    src: ./containers/prometheus.yml
+    dest: /etc/prometheus/prometheus.yml

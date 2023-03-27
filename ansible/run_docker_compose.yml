@@ -1,0 +1,10 @@
+---
+- name: Copy docker-compose file
+  copy:
+    src: ./containers/docker-compose.yml
+    dest: /tmp/docker-compose.yml
+
+- name: Start docker-compose
+  command: docker-compose up -d
+  args:
+    chdir: /tmp

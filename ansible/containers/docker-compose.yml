@@ -1,0 +1,44 @@
+---
+version: "3.7"
+
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  monitoring:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+    driver: bridge
+
+
+services:
+  prometheus:    
+    image: prom/prometheus:v2.43.0
+    container_name: prometheus
+    networks:
+      - monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - /etc/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:    
+    image: grafana/grafana-oss:8.5.22
+    container_name: grafana
+    networks:
+      - monitoring    
+    ports:
+      - "3000:3000"    
+    volumes:
+      - /etc/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana    
+    restart: unless-stopped
